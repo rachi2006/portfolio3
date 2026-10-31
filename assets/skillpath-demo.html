@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SkillPath – Learn any skill, one roadmap at a time</title>
+<style>
+:root{--bg:#07090f;--bg2:#0d111b;--card:#121827;--field:#1b2336;--line:#25304a;--text:#eef1f8;--muted:#8f9ab3;--a:#3b9cf0;--b:#9b6dff;--ok:#3ecf72;--hot:#ff8a3d;color-scheme:dark;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:light){:root{--bg:#f4f6fb;--bg2:#e9edf6;--card:#fff;--field:#eef1f8;--line:#d6ddec;--text:#121726;--muted:#5a6580;--a:#1769c4;--b:#6a3fd6;color-scheme:light}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 'Segoe UI',system-ui,-apple-system,sans-serif;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.grad{background:linear-gradient(90deg,var(--a),var(--b),var(--hot));-webkit-background-clip:text;background-clip:text;color:transparent}
+#bar{position:fixed;top:0;left:0;height:4px;width:0;background:linear-gradient(90deg,var(--a),var(--b),var(--ok));z-index:99}
+.brand{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:18px;z-index:90;font-weight:700;background:color-mix(in srgb,var(--bg) 70%,transparent);backdrop-filter:blur(8px);padding:6px 14px;border-radius:99px;border:1px solid var(--line)}
+.wrap{max-width:1080px;margin:auto;padding:0 20px}
+h1{font-size:clamp(2.6rem,8vw,5.6rem);line-height:1.02;margin:.2em 0;letter-spacing:-.03em}
+h2{font-size:clamp(1.8rem,5vw,3.2rem);line-height:1.1;margin:0 0 .3em;letter-spacing:-.02em}
+.btn{display:inline-block;padding:14px 26px;border-radius:12px;background:linear-gradient(90deg,var(--a),var(--b));color:#fff;font-weight:700}
+.btn.g{background:transparent;border:1px solid var(--line);color:var(--text)}
+/* hero */
+.hero{min-height:100vh;display:grid;place-items:center;text-align:center;position:relative;overflow:hidden;padding:90px 20px 40px}
+.blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:.35;will-change:transform}
+.b1{width:420px;height:420px;background:var(--a);top:-80px;left:-100px}.b2{width:380px;height:380px;background:var(--b);bottom:-60px;right:-80px}.b3{width:260px;height:260px;background:var(--hot);top:40%;left:55%;opacity:.2}
+.hero>div{position:relative}
+.hero p{max-width:620px;margin:0 auto 28px;color:var(--muted);font-size:1.2rem}
+.cue{margin-top:48px;color:var(--muted);font-size:.85rem;animation:bob 1.6s infinite}
+@keyframes bob{50%{transform:translateY(8px)}}
+/* story */
+.story{height:520vh;position:relative}
+.stage{position:sticky;top:0;height:100vh;display:grid;grid-template-columns:.8fr 1.2fr;gap:28px;align-items:center;max-width:1080px;margin:auto;padding:70px 20px 20px}
+.steps{list-style:none;margin:0;padding:0}
+.steps li{padding:14px 16px;margin:8px 0;border-radius:14px;border:1px solid transparent;opacity:.35;transition:.35s;display:flex;gap:14px}
+.steps li.on{opacity:1;background:var(--card);border-color:var(--line);transform:translateX(8px)}
+.steps i{font-style:normal;width:30px;height:30px;border-radius:50%;background:var(--field);display:grid;place-items:center;flex:none;font-weight:700;font-size:.85rem}
+.steps li.on i{background:linear-gradient(135deg,var(--a),var(--b));color:#fff}
+.steps b{display:block}.steps small{color:var(--muted)}
+.win{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 30px 80px rgba(0,0,0,.4);position:relative;min-height:470px;overflow:hidden}
+.dots{display:flex;gap:6px;margin-bottom:12px}.dots i{width:11px;height:11px;border-radius:50%;background:var(--line)}
+.scr{position:absolute;inset:44px 18px 18px;transition:opacity .4s,transform .4s}
+.scr.off{opacity:0;transform:translateY(16px);pointer-events:none}
+.login{display:flex;flex-direction:column;gap:12px;max-width:300px;margin:34px auto;text-align:center}
+.fld{background:var(--field);border-radius:9px;padding:11px 14px;text-align:left;min-height:44px;color:var(--text)}
+.fld small{color:var(--muted);display:block;font-size:.7rem}
+.cur::after{content:"|";animation:blink 1s infinite}@keyframes blink{50%{opacity:0}}
+.pill{background:linear-gradient(90deg,var(--a),var(--b));color:#fff;border-radius:9px;padding:11px;font-weight:700;transition:.3s}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.chip{background:var(--field);border-radius:99px;padding:4px 12px;font-size:.85rem;transition:.4s}
+.chip.hot{background:var(--hot);color:#111;transform:scale(1.12)}
+.sts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.sts div{background:var(--field);border-radius:10px;padding:8px;text-align:center}.sts b{display:block;color:var(--a);font-size:1.2rem}.sts small{font-size:.7rem;color:var(--muted)}
+.rm{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;transition:.5s}
+.rm.off{opacity:0;transform:scale(.94)}
+.pb{height:8px;background:var(--field);border-radius:4px;margin:8px 0;overflow:hidden}.pb span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--a),var(--ok))}
+.tp{display:flex;gap:10px;align-items:center;padding:5px 0;border-top:1px solid var(--line);font-size:.92rem}
+.ck{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center;font-size:.65rem;color:#fff;transition:.25s}
+.tp.d .ck{background:var(--ok);border-color:var(--ok);transform:scale(1.15)}.tp.d span{text-decoration:line-through;color:var(--muted)}
+.note{margin-top:8px;border:1px dashed var(--line);border-radius:8px;padding:6px 10px;font-size:.82rem;color:var(--muted);min-height:32px}
+/* horizontal */
+.hs{height:480vh;position:relative}
+.hs .pin{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+.hs .hd{text-align:center;padding:0 20px 24px}.hs .hd p{color:var(--muted);margin:0}
+.trk{display:flex;gap:22px;padding:0 8vw;will-change:transform}
+.pn{flex:none;width:min(78vw,420px);height:340px;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:28px;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden}
+.pn em{position:absolute;top:10px;right:18px;font-size:5rem;font-style:normal;opacity:.15;font-weight:800}
+.pn .ic{font-size:2.8rem;margin-bottom:auto}.pn h3{margin:0 0 6px;font-size:1.5rem}.pn p{margin:0;color:var(--muted)}
+/* about */
+section.pad{padding:110px 0}
+.about{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.about p{color:var(--muted);font-size:1.1rem}
+.nums{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.nums div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;text-align:center}
+.nums b{display:block;font-size:2.8rem;line-height:1.1}.nums span{color:var(--muted);font-size:.9rem}
+/* tech */
+.tech{background:var(--bg2)}
+.tg{margin:34px 0}.tg h3{margin:0 0 12px;color:var(--muted);font-size:.85rem;text-transform:uppercase;letter-spacing:.12em}
+.tc{display:flex;gap:12px;flex-wrap:wrap}
+.t{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 18px;display:flex;gap:10px;align-items:center}
+.t small{display:block;color:var(--muted);font-size:.75rem;line-height:1.2}
+.t b{font-size:.98rem}
+.rv{opacity:0;transform:translateY(40px) scale(.96);transition:opacity .7s,transform .7s;transition-delay:var(--d,0s)}
+.rv.l{transform:translateX(-60px)}.rv.r{transform:translateX(60px)}
+.rv.in{opacity:1;transform:none}
+.end{text-align:center;padding:130px 20px 90px;position:relative;overflow:hidden}
+.end p{color:var(--muted);max-width:520px;margin:0 auto 28px}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:24px 20px calc(24px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}
+@media(max-width:820px){.stage{grid-template-columns:1fr;padding-top:56px;gap:10px;align-content:start}.steps{display:flex;gap:6px;overflow:hidden}.steps li{flex:none;padding:6px 10px;margin:0;display:none}.steps li.on{display:flex;transform:none}.steps small{display:none}.win{min-height:430px}.about{grid-template-columns:1fr}.pn{height:300px}}
+@media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}.blob,.cue{animation:none}}
+</style>
+</head>
+<body>
+<div id="bar"></div><div class="brand">🚀 SkillPath</div>
+
+<header class="hero">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+  <div>
+    <h1>Pick a skill.<br><span class="grad">Get your path.</span></h1>
+    <p>SkillPath turns any skill you want to learn into an ordered roadmap, then helps you track every topic, note and daily streak until you finish.</p>
+    <a class="btn" href="https://skillpath-sc6x.onrender.com" target="_blank" rel="noopener noreferrer">Launch SkillPath →</a>
+    <div class="cue">Scroll to see what happens after you log in ↓</div>
+  </div>
+</header>
+
+<section class="story" id="story">
+  <div class="stage">
+    <ol class="steps" id="steps">
+      <li><i>1</i><div><b>Log in securely</b><small>Bcrypt passwords, CSRF protection, rate limiting.</small></div></li>
+      <li><i>2</i><div><b>Enter any skill</b><small>Flask, SQL, ML, JavaScript or anything you like.</small></div></li>
+      <li><i>3</i><div><b>Get your roadmap</b><small>Ordered topics with official docs and time estimates.</small></div></li>
+      <li><i>4</i><div><b>Track your progress</b><small>Tick topics with no page reload; stats update live.</small></div></li>
+      <li><i>5</i><div><b>Keep notes &amp; a streak</b><small>Write takeaways and build a daily habit.</small></div></li>
+    </ol>
+    <div class="win">
+      <div class="dots"><i></i><i></i><i></i></div>
+      <div class="scr" id="sLogin"><div class="login">
+        <h3 style="margin:0">Welcome back</h3>
+        <div class="fld"><small>Username or email</small><span id="u"></span></div>
+        <div class="fld"><small>Password</small><span id="pw"></span></div>
+        <div class="pill" id="lb">Log in</div></div></div>
+      <div class="scr off" id="sDash">
+        <div class="top"><b>Welcome, rachith 👋</b><span class="chip" id="streak">🔥 0-day streak</span></div>
+        <div class="sts"><div><b id="x1">0%</b><small>Progress</small></div><div><b id="x2">0/8</b><small>Topics done</small></div><div><b id="x3">0h</b><small>Left</small></div></div>
+        <div class="fld" style="margin-bottom:10px;display:flex;justify-content:space-between"><span id="sk" class="cur"></span><span style="color:var(--a)">Generate</span></div>
+        <div class="rm off" id="rm"><b>Flask <span class="chip" style="font-size:.7rem">beginner</span></b>
+          <div class="pb"><span id="pbar"></span></div><div id="tl"></div><div class="note" id="nt"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hs" id="hs">
+  <div class="pin">
+    <div class="hd"><h2>What you can do <span class="grad">after login</span></h2><p>Keep scrolling →</p></div>
+    <div class="trk" id="trk">
+      <div class="pn"><em>01</em><div class="ic">🧭</div><h3>Generate roadmaps</h3><p>Type any skill and get an ordered learning path. Shortcuts like “js” or “ml” and even typos still work.</p></div>
+      <div class="pn"><em>02</em><div class="ic">✅</div><h3>Track every topic</h3><p>Tick topics complete and watch per-roadmap and overall progress bars move instantly.</p></div>
+      <div class="pn"><em>03</em><div class="ic">📘</div><h3>Open official courses</h3><p>Each roadmap links to trusted documentation and a main course, so you never hunt for resources.</p></div>
+      <div class="pn"><em>04</em><div class="ic">📝</div><h3>Write topic notes</h3><p>Capture what you learned beside each topic. Notes autosave as you type.</p></div>
+      <div class="pn"><em>05</em><div class="ic">🔥</div><h3>Build a daily streak</h3><p>Finish at least one topic a day to grow your streak and stay consistent.</p></div>
+      <div class="pn"><em>06</em><div class="ic">✨</div><h3>AI-made roadmaps</h3><p>For skills outside the curated list, SkillPath can ask Claude to design a custom roadmap.</p></div>
+      <div class="pn"><em>07</em><div class="ic">👤</div><h3>Manage your profile</h3><p>Add your bio, education and college, search your roadmaps and delete the ones you no longer need.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="pad"><div class="wrap about">
+  <div class="rv l"><h2>About the <span class="grad">project</span></h2>
+    <p>SkillPath is a full-stack web app I built to solve a simple problem: beginners know what they want to learn but not where to start or how to stay on track.</p>
+    <p>Version 1 generated basic roadmaps. Version 2 added proper security, a smarter roadmap engine, AI generation, live dashboard updates, streaks, notes and automated tests.</p></div>
+  <div class="nums rv r">
+    <div><b class="grad" data-n="10">0</b><span>curated skill roadmaps</span></div>
+    <div><b class="grad" data-n="7">0</b><span>user features</span></div>
+    <div><b class="grad" data-n="21">0</b><span>automated tests</span></div>
+    <div><b class="grad" data-n="12">0</b><span>technologies used</span></div>
+  </div>
+</div></section>
+
+<section class="pad tech"><div class="wrap">
+  <h2 class="rv" style="text-align:center">Built with</h2>
+  <p class="rv" style="text-align:center;color:var(--muted);margin:0">Every tool used to build SkillPath v2</p>
+  <div class="tg"><h3 class="rv">Backend</h3><div class="tc">
+    <div class="t rv l"><span>🐍</span><div><b>Python + Flask</b><small>routes, sessions, JSON API</small></div></div>
+    <div class="t rv" style="--d:.1s"><span>🧩</span><div><b>Jinja2</b><small>server-side templates</small></div></div>
+    <div class="t rv r" style="--d:.2s"><span>🤖</span><div><b>Anthropic API</b><small>AI-generated roadmaps</small></div></div></div></div>
+  <div class="tg"><h3 class="rv">Database</h3><div class="tc">
+    <div class="t rv l"><span>🍃</span><div><b>MongoDB Atlas</b><small>users, roadmaps, activity</small></div></div>
+    <div class="t rv r" style="--d:.1s"><span>🔌</span><div><b>PyMongo</b><small>driver and unique indexes</small></div></div></div></div>
+  <div class="tg"><h3 class="rv">Security</h3><div class="tc">
+    <div class="t rv l"><span>🔑</span><div><b>Flask-Bcrypt</b><small>password hashing</small></div></div>
+    <div class="t rv" style="--d:.1s"><span>🛡️</span><div><b>Flask-WTF</b><small>CSRF protection</small></div></div>
+    <div class="t rv r" style="--d:.2s"><span>⏱️</span><div><b>Flask-Limiter</b><small>login rate limiting</small></div></div></div></div>
+  <div class="tg"><h3 class="rv">Frontend</h3><div class="tc">
+    <div class="t rv l"><span>🎨</span><div><b>HTML + CSS</b><small>responsive dark UI</small></div></div>
+    <div class="t rv r" style="--d:.1s"><span>⚡</span><div><b>Vanilla JavaScript</b><small>Fetch API live updates</small></div></div></div></div>
+  <div class="tg"><h3 class="rv">Testing &amp; deployment</h3><div class="tc">
+    <div class="t rv l"><span>🧪</span><div><b>pytest + mongomock</b><small>21 automated tests</small></div></div>
+    <div class="t rv" style="--d:.1s"><span>🚀</span><div><b>Gunicorn + Render</b><small>production hosting</small></div></div>
+    <div class="t rv r" style="--d:.2s"><span>🐙</span><div><b>Git + GitHub</b><small>version control</small></div></div></div></div>
+</div></section>
+
+<section class="end">
+  <div class="blob b1" style="opacity:.2"></div><div class="blob b2" style="opacity:.2"></div>
+  <div style="position:relative"><h2 class="rv">Your next skill starts <span class="grad">today</span></h2>
+  <p class="rv">Create a free account, generate your first roadmap in seconds, and start your streak.</p>
+  <div class="rv"><a class="btn" href="https://skillpath-sc6x.onrender.com" target="_blank" rel="noopener noreferrer">Start learning →</a>
+  <a class="btn g" href="https://github.com/rachi2006/learn_skills" target="_blank" rel="noopener noreferrer">View on GitHub</a></div></div>
+</section>
+<footer>SkillPath v2 · Designed &amp; built by Rachith Kumar M</footer>
+
+<script>
+const $=id=>document.getElementById(id),cl=(v,a=0,b=1)=>Math.min(b,Math.max(a,v)),seg=(p,a,b)=>cl((p-a)/(b-a));
+const TOP=["Python Basics","Flask Quickstart","Routing","Templates (Jinja)","Forms & CSRF","Authentication","REST APIs","Deployment"],MIN=[60,60,45,60,60,90,90,90];
+$("tl").innerHTML=TOP.map(t=>`<div class="tp"><div class="ck">✔</div><span>${t}</span></div>`).join("");
+const tps=[...document.querySelectorAll(".tp")],steps=[...document.querySelectorAll("#steps li")],typ=(s,p)=>s.slice(0,Math.round(s.length*p));
+const NOTE="Blueprints keep routes organised.";
+function story(p){
+  $("u").textContent=typ("rachith_kumar",seg(p,.01,.07));$("u").className=p<.07?"cur":"";
+  $("pw").textContent="•".repeat(Math.round(10*seg(p,.07,.11)));$("pw").className=p>=.07&&p<.12?"cur":"";
+  $("lb").style.transform=p>.115&&p<.14?"scale(.94)":"none";
+  const dash=p>.14;$("sLogin").classList.toggle("off",dash);$("sDash").classList.toggle("off",!dash);
+  $("sk").textContent=typ("Flask",seg(p,.2,.3));$("sk").className=p<.34?"cur":"";
+  $("rm").classList.toggle("off",p<.36);
+  const n=Math.round(8*seg(p,.42,.8));tps.forEach((e,i)=>e.classList.toggle("d",i<n));
+  const pc=Math.round(n/8*100);$("pbar").style.width=pc+"%";$("x1").textContent=pc+"%";$("x2").textContent=n+"/8";
+  $("x3").textContent=(MIN.slice(n).reduce((a,b)=>a+b,0)/60).toFixed(1)+"h";
+  const hot=n>0;$("streak").textContent="🔥 "+(hot?1:0)+"-day streak";$("streak").classList.toggle("hot",hot);
+  $("nt").textContent=typ(NOTE,seg(p,.84,.97))||"Add a note…";
+  const s=p<.14?0:p<.34?1:p<.42?2:p<.82?3:4;steps.forEach((e,i)=>e.classList.toggle("on",i===s));
+}
+const st=$("story"),hs=$("hs"),trk=$("trk"),bar=$("bar");
+function frame(){
+  const vh=innerHeight,h=document.documentElement;
+  bar.style.width=(h.scrollTop/(h.scrollHeight-vh)*100)+"%";
+  let r=st.getBoundingClientRect();story(cl(-r.top/(r.height-vh)));
+  r=hs.getBoundingClientRect();const hp=cl(-r.top/(r.height-vh));
+  trk.style.transform=`translateX(${-hp*(trk.scrollWidth-innerWidth)}px)`;
+  const y=h.scrollTop;document.querySelector(".b1").style.transform=`translateY(${y*.25}px)`;
+  document.querySelector(".b2").style.transform=`translateY(${-y*.18}px)`;
+  document.querySelector(".b3").style.transform=`translate(${-y*.2}px,${y*.1}px)`;
+}
+let tick=false;addEventListener("scroll",()=>{if(!tick){tick=true;requestAnimationFrame(()=>{frame();tick=false})}},{passive:true});
+addEventListener("resize",frame);frame();
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;e.target.classList.add("in");
+e.target.querySelectorAll("[data-n]").forEach(el=>{const to=+el.dataset.n;let v=0;const t=setInterval(()=>{v++;el.textContent=v;if(v>=to)clearInterval(t)},60)});
+io.unobserve(e.target)}),{threshold:.2});
+document.querySelectorAll(".rv").forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
