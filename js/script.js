@@ -43,12 +43,6 @@ if (mobileMenu && navLinks) {
 
 const navbar = document.getElementById("navbar");
 const scrollProgress = document.getElementById("scrollProgress");
-const shardOffsets = [
-    [-38, -36, -7], [4, -52, 4], [42, -28, 8],
-    [-54, -4, -5], [0, 0, 0], [56, 12, 6],
-    [-48, 26, -8], [6, 38, 3], [50, 30, 7],
-    [-34, 48, -6], [2, 54, 5], [44, 42, 8]
-];
 const skillScatter = [
     [-330, -100, -310, -13], [300, -92, -350, 11],
     [-360, 72, -390, -10], [350, 74, -430, 12],
@@ -88,18 +82,13 @@ function updateScrollScene() {
     hero.style.setProperty("--hero-content-shift", `${scrollOffset * -0.08}px`);
     hero.style.setProperty("--hero-visual-shift", `${scrollOffset * 0.14}px`);
 
-    const shardProgress = Math.min(window.scrollY / 420, 1);
-    const photoShards = document.querySelector(".photo-shards");
+    const studentCard = document.querySelector(".student-card");
 
-    if (photoShards) {
-        photoShards.style.setProperty("--shard-progress", shardProgress.toFixed(3));
-
-        photoShards.querySelectorAll(".shard").forEach((shard, index) => {
-            const [x, y, rotation] = shardOffsets[index];
-            shard.style.setProperty("--shard-x", `${x * shardProgress}px`);
-            shard.style.setProperty("--shard-y", `${y * shardProgress}px`);
-            shard.style.setProperty("--shard-rotate", `${rotation * shardProgress}deg`);
-        });
+    if (studentCard) {
+        const cardProgress = Math.min(window.scrollY / 520, 1);
+        studentCard.style.setProperty("--card-scroll-rotate", `${cardProgress * 8}deg`);
+        studentCard.style.setProperty("--card-scroll-tilt", `${cardProgress * 2}deg`);
+        studentCard.style.setProperty("--card-scroll-y", `${cardProgress * 24}px`);
     }
 
     const skillsSection = document.querySelector(".skills-section");
@@ -232,6 +221,356 @@ sections.forEach(section => {
     sectionObserver.observe(section);
 });
 
+const tourGuide = document.getElementById("tourGuide");
+const tourGuideBubble = document.getElementById("tourGuideBubble");
+const tourGuideMessage = document.getElementById("tourGuideMessage");
+const tourGuideToggle = document.getElementById("tourGuideToggle");
+const tourGuideMessages = {
+    home: "This is Rachith’s resume. View it or download a copy using the buttons below.",
+    about: "This is Rachith — a B.Tech AI & Data Science student building practical systems.",
+    journey: "Here’s the journey: foundations first, then real-world building.",
+    skills: "These are the tools Rachith uses to turn ideas into working products.",
+    certifications: "A few certifications that support his learning path.",
+    projects: "Now let’s look at the projects where AI, data and backend work meet.",
+    direction: "Here’s where Rachith is heading: intelligent systems built with AI, data and engineering.",
+    github: "You can explore more experiments and code on GitHub.",
+    contact: "Want to build something useful together? Start a conversation with Rachith."
+};
+
+let activeGuideSection = document.getElementById("home");
+let lastGuideMessage = tourGuideMessage ? tourGuideMessage.textContent : "";
+let guideTypingTimer = null;
+let resumeCueActive = false;
+let activeJourneyItem = null;
+const journeyGuideMessages = [
+    "He started in 2024 by building programming fundamentals and exploring AI and Data Science.",
+    "In 2025, he went deeper into Python and moved into web and backend development.",
+    "In 2026, he began building practical projects with data, AI, analytics and developer tools.",
+    "Now he is combining AI, Data, Backend and Cloud while strengthening problem-solving skills."
+];
+let activeSkillCard = null;
+let activeSkillIndex = 0;
+let activeDirectionCard = null;
+let activeDirectionIndex = 0;
+let activeProjectCard = null;
+let activeProjectIndex = 0;
+const skillGuideMessages = [
+    "Programming is the foundation: Python, Java, object-oriented programming and DSA.",
+    "Data Science turns information into insight with NumPy, Pandas, SQL and Excel.",
+    "Backend development helps him build useful web applications, APIs and services.",
+    "Databases support the systems he builds, from SQL foundations to MongoDB Atlas.",
+    "AI and Machine Learning connect his programming and data skills to intelligent solutions.",
+    "Cloud and developer tools help him collaborate, deploy and keep building reliably."
+];
+const directionGuideMessages = [
+    "He enjoys building intelligent applications that combine AI, data and backend systems to solve real problems.",
+    "Right now, he is learning across AI, Data, Engineering, Java, DSA, Cloud, Python and SQL.",
+    "His goal is to become a strong AI and Data professional who can build scalable intelligent systems."
+];
+
+function getProjectCards() {
+    if (!activeGuideSection || activeGuideSection.id !== "projects") {
+        return [];
+    }
+
+    return [...activeGuideSection.querySelectorAll(".project-featured, .project-card")]
+        .sort((first, second) => {
+            const getSerial = card => {
+                const label = card.querySelector(".project-meta, .project-card-header");
+                const match = label?.textContent.match(/(\d+)\s*\//);
+                return match ? Number(match[1]) : Number.MAX_SAFE_INTEGER;
+            };
+
+            return getSerial(first) - getSerial(second);
+        });
+}
+
+function getProjectGuideMessage(card, index) {
+    const name = card.querySelector("h3")?.textContent.trim() || "this project";
+    const projectStatus = card.querySelector(".project-status");
+
+    if (projectStatus) {
+        return `Project ${index + 1}, ${name}. Currently learning and building.`;
+    }
+
+    const description = card.querySelector(".project-description, p")?.textContent
+        .replace(/\s+/g, " ")
+        .trim();
+    const links = [...card.querySelectorAll(".project-link")].filter(link => {
+        const href = link.getAttribute("href");
+        return href && href !== "#";
+    });
+    const hasGitHub = links.some(link => /github/i.test(link.textContent));
+    const hasDemo = links.some(link => /demo/i.test(link.textContent));
+    const actions = [];
+
+    if (hasGitHub) {
+        actions.push("View it on GitHub");
+    }
+
+    if (hasDemo) {
+        actions.push("open the demo");
+    }
+
+    const actionMessage = actions.length
+        ? ` You can ${actions.join(" and ")} using the links on the card.`
+        : "";
+
+    return `Project ${index + 1}, ${name}. ${description || "A practical project in Rachith’s learning journey."}${actionMessage}`;
+}
+
+function moveTourGuide() {
+    if (!tourGuide || !activeGuideSection) return;
+
+    const shouldShowResumeCue =
+        activeGuideSection.id === "home" && window.scrollY > 90;
+
+    if (activeGuideSection.id === "home" && shouldShowResumeCue !== resumeCueActive) {
+        resumeCueActive = shouldShowResumeCue;
+        readTourGuideMessage(
+            shouldShowResumeCue
+                ? tourGuideMessages.home
+                : "Hi, I’m Rachith’s AI guide. Scroll to explore his work."
+        );
+    }
+
+    let anchor = activeGuideSection.querySelector(".section-heading") ||
+        activeGuideSection.querySelector(".hero-content") ||
+        activeGuideSection;
+    let positionBesideAnchor = false;
+
+    if (activeGuideSection.id === "home" && shouldShowResumeCue) {
+        anchor = activeGuideSection.querySelector(".hero-actions");
+    }
+
+    if (activeGuideSection.id === "contact") {
+        anchor = activeGuideSection.querySelector(".contact-cta") || anchor;
+    }
+
+    if (activeGuideSection.id === "journey") {
+        const journeyItems = [...activeGuideSection.querySelectorAll(".timeline-item")];
+        const viewportTarget = window.innerHeight * 0.42;
+        const visibleItems = journeyItems.filter(item => {
+            const rect = item.getBoundingClientRect();
+            return rect.bottom > 80 && rect.top < window.innerHeight * 0.82;
+        });
+        const journeyItem = visibleItems.sort((first, second) => {
+            const firstRect = first.getBoundingClientRect();
+            const secondRect = second.getBoundingClientRect();
+            return Math.abs(firstRect.top + firstRect.height / 2 - viewportTarget) -
+                Math.abs(secondRect.top + secondRect.height / 2 - viewportTarget);
+        })[0];
+
+        if (journeyItem) {
+            const journeyIndex = journeyItems.indexOf(journeyItem);
+            anchor = journeyItem.querySelector(".timeline-content") || journeyItem;
+            positionBesideAnchor = true;
+
+            if (journeyItem !== activeJourneyItem) {
+                activeJourneyItem = journeyItem;
+                readTourGuideMessage(journeyGuideMessages[journeyIndex]);
+            }
+        }
+    } else {
+        activeJourneyItem = null;
+    }
+
+    if (activeGuideSection.id === "skills") {
+        const skillCards = [...activeGuideSection.querySelectorAll(".skill-card")];
+        const sectionTop = activeGuideSection.getBoundingClientRect().top + window.scrollY;
+        const sectionScrollRange = Math.max(
+            1,
+            activeGuideSection.offsetHeight - window.innerHeight
+        );
+        const skillProgress = Math.max(
+            0,
+            Math.min(0.999, (window.scrollY - sectionTop + 80) / sectionScrollRange)
+        );
+        const targetSkillIndex = Math.min(
+            skillCards.length - 1,
+            Math.floor(skillProgress * skillCards.length)
+        );
+        const skillIndex = Math.max(
+            activeSkillIndex - 1,
+            Math.min(activeSkillIndex + 1, targetSkillIndex)
+        );
+        const skillCard = skillCards[skillIndex];
+
+        if (skillCard) {
+            anchor = skillCard;
+            positionBesideAnchor = true;
+
+            if (skillCard !== activeSkillCard) {
+                activeSkillCard = skillCard;
+                activeSkillIndex = skillIndex;
+                readTourGuideMessage(skillGuideMessages[skillIndex]);
+            }
+        }
+    } else {
+        activeSkillCard = null;
+        activeSkillIndex = 0;
+    }
+
+    if (activeGuideSection.id === "direction") {
+        const directionCards = [...activeGuideSection.querySelectorAll(".direction-card")];
+        const sectionTop = activeGuideSection.getBoundingClientRect().top + window.scrollY;
+        const sectionScrollRange = Math.max(
+            1,
+            activeGuideSection.offsetHeight - window.innerHeight
+        );
+        const directionProgress = Math.max(
+            0,
+            Math.min(0.999, (window.scrollY - sectionTop + 80) / sectionScrollRange)
+        );
+        const directionIndex = Math.min(
+            directionCards.length - 1,
+            Math.floor(directionProgress * directionCards.length)
+        );
+        const directionCard = directionCards[directionIndex];
+
+        if (directionCard) {
+            anchor = directionCard;
+            positionBesideAnchor = true;
+
+            if (directionCard !== activeDirectionCard) {
+                activeDirectionCard = directionCard;
+                activeDirectionIndex = directionIndex;
+                readTourGuideMessage(directionGuideMessages[directionIndex]);
+            }
+        }
+    } else {
+        activeDirectionCard = null;
+        activeDirectionIndex = 0;
+    }
+
+    if (activeGuideSection.id === "projects") {
+        if (activeProjectCard) {
+            anchor = activeProjectCard;
+            positionBesideAnchor = true;
+        }
+    } else {
+        activeProjectCard = null;
+        activeProjectIndex = 0;
+    }
+
+    const anchorRect = anchor.getBoundingClientRect();
+    const guideWidth = tourGuide.getBoundingClientRect().width;
+    const guideHeight = tourGuide.getBoundingClientRect().height;
+    const sidePosition = positionBesideAnchor
+        ? anchorRect.left - guideWidth - 18
+        : anchorRect.right - guideWidth;
+    const left = Math.min(Math.max(16, sidePosition), window.innerWidth - guideWidth - 16);
+    const top = Math.min(
+        Math.max(80, anchorRect.top + 12),
+        window.innerHeight - guideHeight - 16
+    );
+
+    tourGuide.style.left = `${left}px`;
+    tourGuide.style.top = `${top}px`;
+}
+
+function readTourGuideMessage(message) {
+    if (!tourGuideMessage || message === lastGuideMessage) {
+        return;
+    }
+
+    window.clearInterval(guideTypingTimer);
+    lastGuideMessage = message;
+    tourGuideMessage.textContent = "";
+    if (tourGuide) {
+        tourGuide.classList.add("is-reading");
+    }
+
+    let characterIndex = 0;
+    guideTypingTimer = window.setInterval(() => {
+        tourGuideMessage.textContent += message[characterIndex];
+        characterIndex += 1;
+
+        if (characterIndex >= message.length) {
+            window.clearInterval(guideTypingTimer);
+            if (tourGuide) {
+                tourGuide.classList.remove("is-reading");
+            }
+        }
+    }, 24);
+}
+
+const tourGuideObserver = new IntersectionObserver(
+    entries => {
+        entries
+            .filter(entry => entry.isIntersecting)
+            .sort((first, second) => second.intersectionRatio - first.intersectionRatio)
+            .slice(0, 1)
+            .forEach(entry => {
+                const message = tourGuideMessages[entry.target.id];
+
+                if (message && tourGuideBubble && tourGuideMessage) {
+                    activeGuideSection = entry.target;
+                    if (entry.target.id !== "home") {
+                        resumeCueActive = false;
+                    }
+                    readTourGuideMessage(message);
+                    moveTourGuide();
+                }
+            });
+    },
+    {
+        threshold: [0.2, 0.45, 0.7],
+        rootMargin: "-12% 0px -32% 0px"
+    }
+);
+
+if (tourGuide && tourGuideBubble) {
+    sections.forEach(section => {
+        tourGuideObserver.observe(section);
+    });
+}
+
+if (tourGuide && tourGuideToggle) {
+    tourGuideToggle.addEventListener("click", () => {
+        const isMuted = tourGuide.classList.toggle("is-muted");
+        tourGuideToggle.setAttribute("aria-pressed", isMuted ? "true" : "false");
+        tourGuideToggle.textContent = isMuted ? "Show guide" : "Hide guide";
+    });
+}
+
+const projectsSection = document.getElementById("projects");
+
+if (projectsSection) {
+    projectsSection
+        .querySelectorAll(".project-featured, .project-card")
+        .forEach(card => {
+            card.addEventListener("pointerenter", () => {
+                activeGuideSection = projectsSection;
+                const projectCards = getProjectCards();
+                activeProjectCard = card;
+                activeProjectIndex = projectCards.indexOf(card);
+                readTourGuideMessage(
+                    getProjectGuideMessage(card, activeProjectIndex)
+                );
+                moveTourGuide();
+            });
+        });
+
+    const projectHub = projectsSection.querySelector(".project-hub");
+
+    if (projectHub) {
+        projectHub.addEventListener("pointerenter", () => {
+            activeGuideSection = projectsSection;
+            activeProjectCard = projectHub;
+            activeProjectIndex = -1;
+            readTourGuideMessage(
+                "This is the Project Hub. Explore it to find more experiments, practice work and projects."
+            );
+            moveTourGuide();
+        });
+    }
+}
+
+window.addEventListener("scroll", moveTourGuide, { passive: true });
+window.addEventListener("resize", moveTourGuide);
+window.setTimeout(moveTourGuide, 0);
+
 
 /* =========================================================
    SMOOTH SCROLL
@@ -304,16 +643,16 @@ document.querySelectorAll(".hero .reveal").forEach(element => {
 
 
 /* =========================================================
-   HERO PHOTO 3D EFFECT
+   HERO STUDENT CARD 3D EFFECT
 ========================================================= */
 
-const photoCard = document.querySelector(".photo-card");
+const studentCard = document.querySelector(".student-card");
 
-if (photoCard && window.matchMedia("(pointer: fine)").matches) {
+if (studentCard && window.matchMedia("(pointer: fine)").matches) {
 
-    photoCard.addEventListener("mousemove", event => {
+    studentCard.addEventListener("mousemove", event => {
 
-        const rect = photoCard.getBoundingClientRect();
+        const rect = studentCard.getBoundingClientRect();
 
         const x =
             (event.clientX - rect.left) /
@@ -326,22 +665,15 @@ if (photoCard && window.matchMedia("(pointer: fine)").matches) {
         const rotateY = (x - 0.5) * 12;
         const rotateX = (0.5 - y) * 12;
 
-        photoCard.style.transform = `
-            perspective(1200px)
-            rotateY(${rotateY}deg)
-            rotateX(${rotateX}deg)
-        `;
+        studentCard.style.setProperty("--card-pointer-rotate-y", `${rotateY}deg`);
+        studentCard.style.setProperty("--card-pointer-rotate-x", `${rotateX}deg`);
 
     });
 
 
-    photoCard.addEventListener("mouseleave", () => {
-
-        photoCard.style.transform = `
-            perspective(1200px)
-            rotateY(-8deg)
-            rotateX(4deg)
-        `;
+    studentCard.addEventListener("mouseleave", () => {
+        studentCard.style.removeProperty("--card-pointer-rotate-y");
+        studentCard.style.removeProperty("--card-pointer-rotate-x");
 
     });
 

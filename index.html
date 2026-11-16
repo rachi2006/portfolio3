@@ -29,7 +29,7 @@
         rel="stylesheet"
     >
 
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=9">
 </head>
 
 <body>
@@ -178,55 +178,65 @@
                 </div>
 
 
-                <!-- HERO PHOTO -->
+                <!-- HERO STUDENT ID CARD -->
 
                 <div class="hero-visual reveal">
 
-                    <div class="photo-card">
+                    <div class="id-lanyard" aria-hidden="true">
+                        <span class="lanyard-loop"></span>
+                        <span class="lanyard-label">AI &amp; DATA SCIENCE</span>
+                    </div>
 
-                        <div class="photo-card-top">
-                            <span>PROFILE</span>
-                            <span>01</span>
+                    <div class="student-card" aria-label="Rachith Kumar M student profile card">
+
+                        <div class="student-card-top">
+                            <span>PARUL UNIVERSITY</span>
+                            <span>STUDENT ID</span>
                         </div>
 
-                        <div class="photo-wrapper">
+                        <div class="student-card-body">
 
-                            <div
-                                class="photo-shards"
-                                role="img"
-                                aria-label="Portrait of Rachith Kumar M"
-                            >
-                                <span class="shard shard-01"></span>
-                                <span class="shard shard-02"></span>
-                                <span class="shard shard-03"></span>
-                                <span class="shard shard-04"></span>
-                                <span class="shard shard-05"></span>
-                                <span class="shard shard-06"></span>
-                                <span class="shard shard-07"></span>
-                                <span class="shard shard-08"></span>
-                                <span class="shard shard-09"></span>
-                                <span class="shard shard-10"></span>
-                                <span class="shard shard-11"></span>
-                                <span class="shard shard-12"></span>
+                            <div class="student-photo">
+                                <img src="assets/profile.jpg" alt="Portrait of Rachith Kumar M">
+                                <span>RK</span>
                             </div>
 
-                            <div class="photo-overlay"></div>
-
-                        </div>
-
-                        <div class="photo-info">
-
-                            <div>
-                                <strong>Rachith Kumar M</strong>
-                                <span>AI & Data Science</span>
-                            </div>
-
-                            <div class="photo-index">
-                                RK
+                            <div class="student-details">
+                                <span class="student-eyebrow">B.TECH / CSE AI &amp; DS</span>
+                                <h2>Rachith Kumar M</h2>
+                                <div class="student-detail-grid">
+                                    <div>
+                                        <span>College</span>
+                                        <strong>Parul University</strong>
+                                    </div>
+                                    <div>
+                                        <span>Semester</span>
+                                        <strong>6th Semester</strong>
+                                    </div>
+                                    <div>
+                                        <span>CGPA</span>
+                                        <strong>7.5 / 10</strong>
+                                    </div>
+                                    <div>
+                                        <span>Focus</span>
+                                        <strong>AI &amp; Data Science</strong>
+                                    </div>
+                                </div>
                             </div>
 
                         </div>
 
+                        <div class="student-card-footer">
+                            <span>BUILDING INTELLIGENT SYSTEMS</span>
+                            <span class="student-card-mark">RK / 06</span>
+                        </div>
+
+                    </div>
+
+                    <div class="student-card-tag">
+                        <span>3RD YEAR</span>
+                        <b>•</b>
+                        <span>7.5 CGPA</span>
                     </div>
 
 
@@ -1277,7 +1287,7 @@
              DIRECTION
         ========================== -->
 
-        <section class="section direction-section">
+        <section class="section direction-section" id="direction">
 
             <div class="section-container">
 
@@ -1664,6 +1674,39 @@
         </section>
 
     </main>
+
+    <aside class="tour-guide" id="tourGuide" aria-label="Portfolio guide">
+        <div class="tour-guide-bubble" id="tourGuideBubble" aria-live="polite">
+            <span id="tourGuideMessage">Hi, I’m Rachith’s AI guide. Scroll to explore his work.</span>
+            <i class="tour-guide-cursor" aria-hidden="true"></i>
+        </div>
+
+        <div class="tour-guide-controls">
+            <button
+                class="tour-guide-toggle"
+                id="tourGuideToggle"
+                type="button"
+                aria-pressed="false"
+            >
+                Hide guide
+            </button>
+        </div>
+
+        <div class="tour-guide-robot" aria-hidden="true">
+            <span class="tour-guide-antenna"></span>
+            <span class="tour-guide-signal"></span>
+            <div class="tour-guide-head">
+                <span></span>
+                <span></span>
+                <b></b>
+            </div>
+            <div class="tour-guide-body">
+                <span></span>
+            </div>
+            <i></i>
+            <i></i>
+        </div>
+    </aside>
 
 
     <!-- =========================
