@@ -241,6 +241,8 @@ let activeGuideSection = document.getElementById("home");
 let lastGuideMessage = tourGuideMessage ? tourGuideMessage.textContent : "";
 let guideTypingTimer = null;
 let resumeCueActive = false;
+let guideIntroActive = true;
+const guideIntroDuration = 4500;
 let activeJourneyItem = null;
 const journeyGuideMessages = [
     "He started in 2024 by building programming fundamentals and exploring AI and Data Science.",
@@ -323,7 +325,9 @@ function moveTourGuide() {
     if (!tourGuide || !activeGuideSection) return;
 
     const shouldShowResumeCue =
-        activeGuideSection.id === "home" && window.scrollY > 90;
+        activeGuideSection.id === "home" &&
+        !guideIntroActive &&
+        window.scrollY > 90;
 
     if (activeGuideSection.id === "home" && shouldShowResumeCue !== resumeCueActive) {
         resumeCueActive = shouldShowResumeCue;
@@ -509,7 +513,9 @@ const tourGuideObserver = new IntersectionObserver(
                     if (entry.target.id !== "home") {
                         resumeCueActive = false;
                     }
-                    readTourGuideMessage(message);
+                    if (!(entry.target.id === "home" && guideIntroActive)) {
+                        readTourGuideMessage(message);
+                    }
                     moveTourGuide();
                 }
             });
@@ -570,6 +576,10 @@ if (projectsSection) {
 window.addEventListener("scroll", moveTourGuide, { passive: true });
 window.addEventListener("resize", moveTourGuide);
 window.setTimeout(moveTourGuide, 0);
+window.setTimeout(() => {
+    guideIntroActive = false;
+    moveTourGuide();
+}, guideIntroDuration);
 
 
 /* =========================================================
